@@ -2,4 +2,16 @@
 
 Self contained virtual environments for Julia.
 
-`julia -e 'using VirtualEnv; venv("env")'`
+# Usage
+
+Creating a virtual environment:
+
+`~$ julia -e 'using VirtualEnv; venv("env")'`
+
+Activating the virtual environment:
+
+`~$ source env/bin/activate`
+
+Deactivating an environment:
+
+`~$ deactivate`
