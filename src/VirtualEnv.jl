@@ -9,13 +9,15 @@ export venv
 
 assetsdir() = normpath(joinpath(dirname(@__FILE__), "..", "assets"))
 
-function venv(env::String)
-  if ispath(env)
-    println("ERROR: Folder ", env, " exists")
-    exit(1)
+function create(env_dir::String)
+  if Sys.iswindows()
+    throw(ErrorException("Windows is not currently supported"))
+  end
+  if ispath(env_dir)
+    throw(ErrorException(string("Folder ", env_dir, " exists")))
   end
 
-  venv_dir = abspath(env)
+  venv_dir = abspath(env_dir)
   bin_name = "bin"
   bin_dir = joinpath(venv_dir, bin_name)
   julia_exec = ENV["_"]
@@ -32,6 +34,15 @@ function venv(env::String)
   end
 end
 
+"""
+    venv(env_dirs::String...)
 
+Create the listed environment directories.
+"""
+function venv(env_dirs::String...)
+  for env_dir in env_dirs
+    create(env_dir)
+  end
+end
 
 end

@@ -4,4 +4,4 @@ authors = ["Micah Halter <micah@mehalter.com>"]
 version = "0.1.0"
 
 [compat]
-julia="1.0"
+julia = "1.0"
