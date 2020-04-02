@@ -9,6 +9,8 @@ export venv
 
 include("Utilities.jl")
 
+""" Julia instance context definition
+"""
 struct Context
   install::String
   bin::String
@@ -19,6 +21,11 @@ struct Context
   registries::String
 end
 
+"""
+    context(install_dir::String, depot_dir::String)
+
+Helper function to instantiate a julia context
+"""
 function context(install_dir::String, depot_dir::String)
   return Context(install_dir,
                  joinpath(install_dir, "bin"),
@@ -37,7 +44,7 @@ Print usage of the venv function
 """
 function usage()
   print("""
-usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)], [help=(true|false)])
+        usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)], [prompt=PROMPT], [help=(true|false)])
 
 Creates virtual Julia environments in one or more target directories.
 
@@ -50,6 +57,7 @@ optional arguments:
                         already exists, before environment creation. (Default: false)
   upgrade=(true|false)  Upgrade the environment directory to use this version
                         of Julia, assuming Julia has been upgraded in-place. (Default: false)
+  prompt=PROMPT         Provides an alternative prompt prefix for this environment. (Default: ENV_DIR)
 
 Once an environment has been created, you may wish to activate it,
 e.g. by sourcing an activate script in its bin directory.
