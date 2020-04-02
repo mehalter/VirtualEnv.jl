@@ -26,10 +26,6 @@ if defined _OLD_DEPOT_PATH set JULIA_DEPOT_PATH=%_OLD_DEPOT_PATH%
 if not defined _OLD_DEPOT_PATH set _OLD_DEPOT_PATH=%JULIA_DEPOT_PATH%
 set JULIA_DEPOT_PATH=__DEPOT_DIR__
 
-if defined _OLD_LOAD_PATH set JULIA_LOAD_PATH=%_OLD_LOAD_PATH%
-if not defined _OLD_LOAD_PATH set _OLD_LOAD_PATH=%JULIA_LOAD_PATH%
-set JULIA_LOAD_PATH=:
-
 :END
 if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" %_OLD_CODEPAGE% > nul
