@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added custom prompts
+- Added Windows command prompt support
 - Added usage display if `help` option provided or no environment directories
   provided
 - Added `upgrade` option to upgrade julia in place if exists before creating

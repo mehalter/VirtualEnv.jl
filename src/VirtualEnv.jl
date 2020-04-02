@@ -65,7 +65,7 @@ e.g. by sourcing an activate script in its bin directory.
 end
 
 """
-    create(env_dir::String, clear::Bool, upgrade::Bool)
+    create(env_dir::String, clear::Bool, upgrade::Bool, prompt::String)
 
 Helper function to create a single virtual environment
 """
