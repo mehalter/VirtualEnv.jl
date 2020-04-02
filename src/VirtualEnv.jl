@@ -100,7 +100,9 @@ function create(env_dir::String, clear::Bool, upgrade::Bool, prompt::String)
 
   # Check that dependent files exist on the system
   check_exists(orig_context.lib)
-  check_exists(orig_context.libexec)
+  if VERSION > v"1.0"
+    check_exists(orig_context.libexec)
+  end
   check_exists(orig_context.share)
 
   # Create environment directory
@@ -116,7 +118,9 @@ function create(env_dir::String, clear::Bool, upgrade::Bool, prompt::String)
     sym_or_cp(joinpath(orig_context.bin, file), joinpath(venv_context.bin, file), sym, upgrade)
   end
   sym_or_cp(orig_context.lib, venv_context.lib, sym, upgrade)
-  sym_or_cp(orig_context.libexec, venv_context.libexec, sym, upgrade)
+  if VERSION > v"1.0"
+    sym_or_cp(orig_context.libexec, venv_context.libexec, sym, upgrade)
+  end
   sym_or_cp(joinpath(orig_context.share, "julia"), joinpath(venv_context.share, "julia"), sym, upgrade)
 
   # Create activate executable
