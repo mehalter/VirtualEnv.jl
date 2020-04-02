@@ -43,7 +43,7 @@ Helper function to create a single virtual environment
 function create(env_dir::String, clear::Bool, upgrade::Bool)
   # Create variables for use throughout
   venv_dir = abspath(env_dir)
-  venv_prompt = basename(venv_dir)
+  venv_prompt = string("(", basename(venv_dir), ") ")
   if Sys.iswindows()
     exec_name = "julia.exe"
     sym = false
