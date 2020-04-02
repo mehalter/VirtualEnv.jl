@@ -9,6 +9,27 @@ export venv
 
 include("Utilities.jl")
 
+struct Context
+  install::String
+  bin::String
+  lib::String
+  libexec::String
+  share::String
+  depot::String
+  registries::String
+end
+
+function context(install_dir::String, depot_dir::String)
+  return Context(install_dir,
+                 joinpath(install_dir, "bin"),
+                 joinpath(install_dir, "lib"),
+                 joinpath(install_dir, "libexec"),
+                 joinpath(install_dir, "share"),
+                 depot_dir,
+                 joinpath(depot_dir, "registries")
+                )
+end
+
 """
     usage()
 
@@ -40,10 +61,8 @@ end
 
 Helper function to create a single virtual environment
 """
-function create(env_dir::String, clear::Bool, upgrade::Bool)
-  # Create variables for use throughout
-  venv_dir = abspath(env_dir)
-  venv_prompt = string("(", basename(venv_dir), ") ")
+function create(env_dir::String, clear::Bool, upgrade::Bool, prompt::String)
+  # Set system specific variables
   if Sys.iswindows()
     exec_name = "julia.exe"
     sym = false
@@ -52,57 +71,55 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
     sym = true
   end
 
-  julia_depot     = get(ENV, "JULIA_DEPOT_PATH", joinpath(Sys.homedir(), ".julia"))
+  # set original context
   julia_install   = abspath(joinpath(Sys.BINDIR, ".."))
-  julia_lib       = joinpath(julia_install, "lib")
-  julia_libexec   = joinpath(julia_install, "libexec")
-  julia_share     = joinpath(julia_install, "share", "julia")
+  julia_depot     = get(ENV, "JULIA_DEPOT_PATH", joinpath(Sys.homedir(), ".julia"))
+  orig_context = context(julia_install, julia_depot)
 
-  activate_exec   = joinpath(assets_dir(), "activate")
-  registries_orig = joinpath(julia_depot, "registries")
-
-  bin_dest         = joinpath(venv_dir, "bin")
-  activate_dest   = joinpath(bin_dest, "activate")
-  lib_dest        = joinpath(venv_dir, "lib")
-  libexec_dest    = joinpath(venv_dir, "libexec")
-  share_dir       = joinpath(venv_dir, "share")
-  share_dest      = joinpath(share_dir, "julia")
-
+  # set virtual environment variables
+  venv_dir        = abspath(env_dir)
   venv_depot      = joinpath(venv_dir, ".julia")
-  registries_dest = joinpath(venv_depot, "registries")
+  venv_context = context(venv_dir, venv_depot)
+
+  # set venv prompt
+  if isempty(prompt)
+    venv_prompt   = basename(venv_context.install)
+  else
+    venv_prompt   = prompt
+  end
+  venv_prompt     = string("(", venv_prompt, ") ")
 
   # Check that dependent files exist on the system
-  check_exists(julia_lib)
-  check_exists(julia_libexec)
-  check_exists(julia_share)
-  check_exists(activate_exec)
+  check_exists(orig_context.lib)
+  check_exists(orig_context.libexec)
+  check_exists(orig_context.share)
 
   # Create environment directory
-  if ispath(venv_dir) && clear
-    rm(venv_dir; force=true, recursive=true)
+  if ispath(venv_context.install) && clear
+    rm(venv_context.install; force=true, recursive=true)
   end
-  mkpath(bin_dest)
-  mkpath(share_dir)
-  mkpath(venv_depot)
+  mkpath(venv_context.bin)
+  mkpath(venv_context.share)
+  mkpath(venv_context.depot)
 
   # Create julia installation
-  for file in readdir(Sys.BINDIR)
-    sym_or_cp(joinpath(Sys.BINDIR, file), joinpath(bin_dest, file), sym, upgrade)
+  for file in readdir(orig_context.bin)
+    sym_or_cp(joinpath(orig_context.bin, file), joinpath(venv_context.bin, file), sym, upgrade)
   end
-  sym_or_cp(julia_lib, lib_dest, sym, upgrade)
-  sym_or_cp(julia_libexec, libexec_dest, sym, upgrade)
-  sym_or_cp(julia_share, share_dest, sym, upgrade)
+  sym_or_cp(orig_context.lib, venv_context.lib, sym, upgrade)
+  sym_or_cp(orig_context.libexec, venv_context.libexec, sym, upgrade)
+  sym_or_cp(joinpath(orig_context.share, "julia"), joinpath(venv_context.share, "julia"), sym, upgrade)
 
   # Create activate executable
   for file in readdir(assets_dir())
     file_orig = joinpath(assets_dir(), file)
-    file_dest = joinpath(bin_dest, file)
+    file_dest = joinpath(venv_context.bin, file)
     if !isfile(file_dest)
       open(file_dest, "w") do io
         for line in eachline(file_orig)
-          line = replace(line, "__VENV_DIR__" => venv_dir)
+          line = replace(line, "__VENV_DIR__" => venv_context.install)
           line = replace(line, "__VENV_PROMPT__" => venv_prompt)
-          line = replace(line, "__DEPOT_DIR__" => venv_depot)
+          line = replace(line, "__DEPOT_DIR__" => venv_context.depot)
           write(io, string(line, "\n"))
         end
       end
@@ -110,24 +127,22 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   end
 
   # Create symlink to central registries
-  if ispath(registries_orig)
-    sym_or_cp(registries_orig, registries_dest, sym, false)
-  end
+  sym_or_cp(orig_context.registries, venv_context.registries, sym, false)
 end
 
 """
-    venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false)
+    venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, prompt::String=nothing)
 
 Create the listed environment directories.
 """
-function venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, help::Bool=false)
+function venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, help::Bool=false, prompt::String="")
   # Print usage if no environment directories given
   if help || isempty(env_dirs)
     usage()
   # Create each environment directory provided if directories provided
   else
     for env_dir in env_dirs
-      create(env_dir, clear, upgrade)
+      create(env_dir, clear, upgrade, prompt)
     end
   end
 end
