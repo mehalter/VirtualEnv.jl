@@ -22,7 +22,10 @@ end
 Helper function that if sym is true, symlink the original path to the destination
 if sym is false, cp the original path to the destination
 """
-function sym_or_cp(path_orig::String, path_dest::String, sym::Bool)
+function sym_or_cp(path_orig::String, path_dest::String, sym::Bool, upgrade::Bool)
+  if upgrade
+    rm(path_dest; force=true)
+  end
   if !ispath(path_dest)
     if sym
       symlink(path_orig, path_dest)

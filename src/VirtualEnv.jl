@@ -48,12 +48,11 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
     sym = false
   else
     exec_name = "julia"
-    sym = false
+    sym = true
   end
 
   julia_depot     = get(ENV, "JULIA_DEPOT_PATH", joinpath(Sys.homedir(), ".julia"))
   julia_install   = abspath(joinpath(Sys.BINDIR, ".."))
-  julia_exec      = joinpath(Sys.BINDIR, exec_name)
   julia_lib       = joinpath(julia_install, "lib")
   julia_libexec   = joinpath(julia_install, "libexec")
   julia_share     = joinpath(julia_install, "share", "julia")
@@ -61,9 +60,8 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   activate_exec   = joinpath(assets_dir(), "activate")
   registries_orig = joinpath(julia_depot, "registries")
 
-  bin_dir         = joinpath(venv_dir, "bin")
-  julia_dest      = joinpath(bin_dir, exec_name)
-  activate_dest   = joinpath(bin_dir, "activate")
+  bin_dest         = joinpath(venv_dir, "bin")
+  activate_dest   = joinpath(bin_dest, "activate")
   lib_dest        = joinpath(venv_dir, "lib")
   libexec_dest    = joinpath(venv_dir, "libexec")
   share_dir       = joinpath(venv_dir, "share")
@@ -73,7 +71,6 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   registries_dest = joinpath(venv_depot, "registries")
 
   # Check that dependent files exist on the system
-  check_exists(julia_exec)
   check_exists(julia_lib)
   check_exists(julia_libexec)
   check_exists(julia_share)
@@ -83,24 +80,20 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   if ispath(venv_dir) && clear
     rm(venv_dir; force=true, recursive=true)
   end
-  mkpath(bin_dir)
+  mkpath(bin_dest)
   mkpath(share_dir)
   mkpath(venv_depot)
 
   # Create julia installation
-  if upgrade
-    rm(julia_dest; force=true)
-    rm(lib_dest; force=true)
-    rm(libexec_dest; force=true)
-    rm(share_dest; force=true)
+  for file in readdir(Sys.BINDIR)
+    sym_or_cp(joinpath(Sys.BINDIR, file), joinpath(bin_dest, file), sym, upgrade)
   end
-  sym_or_cp(julia_exec, julia_dest, sym)
-  sym_or_cp(julia_lib, lib_dest, sym)
-  sym_or_cp(julia_libexec, libexec_dest, sym)
-  sym_or_cp(julia_share, share_dest, sym)
+  sym_or_cp(julia_lib, lib_dest, sym, upgrade)
+  sym_or_cp(julia_libexec, libexec_dest, sym, upgrade)
+  sym_or_cp(julia_share, share_dest, sym, upgrade)
 
   # Create activate executable
-  if !isfile(activate_dest) && !Sys.iswindows()
+  if !isfile(activate_dest)
     open(activate_dest, "w") do io
       for line in eachline(activate_exec)
         line = replace(line, "__VENV_DIR__" => venv_dir)
@@ -112,7 +105,7 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
 
   # Create symlink to central registries
   if ispath(registries_orig)
-    sym_or_cp(registries_orig, registries_dest, sym)
+    sym_or_cp(registries_orig, registries_dest, sym, false)
   end
 end
 
