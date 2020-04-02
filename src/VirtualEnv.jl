@@ -43,6 +43,7 @@ Helper function to create a single virtual environment
 function create(env_dir::String, clear::Bool, upgrade::Bool)
   # Create variables for use throughout
   venv_dir = abspath(env_dir)
+  venv_prompt = basename(venv_dir)
   if Sys.iswindows()
     exec_name = "julia.exe"
     sym = false
@@ -93,12 +94,17 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   sym_or_cp(julia_share, share_dest, sym, upgrade)
 
   # Create activate executable
-  if !isfile(activate_dest)
-    open(activate_dest, "w") do io
-      for line in eachline(activate_exec)
-        line = replace(line, "__VENV_DIR__" => venv_dir)
-        line = replace(line, "__DEPOT_DIR__" => venv_depot)
-        write(io, string(line, "\n"))
+  for file in readdir(assets_dir())
+    file_orig = joinpath(assets_dir(), file)
+    file_dest = joinpath(bin_dest, file)
+    if !isfile(file_dest)
+      open(file_dest, "w") do io
+        for line in eachline(file_orig)
+          line = replace(line, "__VENV_DIR__" => venv_dir)
+          line = replace(line, "__VENV_PROMPT__" => venv_prompt)
+          line = replace(line, "__DEPOT_DIR__" => venv_depot)
+          write(io, string(line, "\n"))
+        end
       end
     end
   end
