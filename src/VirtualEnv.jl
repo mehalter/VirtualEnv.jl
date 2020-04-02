@@ -44,7 +44,8 @@ Print usage of the venv function
 """
 function usage()
   print("""
-        usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)], [prompt=PROMPT], [help=(true|false)])
+usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)],
+            [prompt=PROMPT], [help=(true|false)])
 
 Creates virtual Julia environments in one or more target directories.
 

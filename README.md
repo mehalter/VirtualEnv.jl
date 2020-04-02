@@ -2,18 +2,27 @@
 
 Self contained virtual environments for Julia.
 
-**Currently only officially supports Linux, but it should work on Mac OS X**
+## Supported Shells
+
+- Bash
+- ZSH
+- Windows Command Prompt
+
+### Upcoming
+
+- Fish
+- CSH
+- Powershell
 
 # Installation
 
-Current installation until ready to put on General.jl repository
-
-`~$ julia -e 'using Pkg; Pkg.add("https://git.mehalter.com/mehalter/VirtualEnv.jl.git")'`
+`~$ julia -e 'using Pkg; Pkg.add("VirtualEnv")'`
 
 # Usage
 
 ```
-usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)], [help=(true|false)])
+usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)],
+            [prompt=PROMPT], [help=(true|false)])
 
 Creates virtual Julia environments in one or more target directories.
 
@@ -26,6 +35,7 @@ optional arguments:
                         already exists, before environment creation. (Default: false)
   upgrade=(true|false)  Upgrade the environment directory to use this version
                         of Julia, assuming Julia has been upgraded in-place. (Default: false)
+  prompt=PROMPT         Provides an alternative prompt prefix for this environment. (Default: ENV_DIR)
 
 Once an environment has been created, you may wish to activate it,
 e.g. by sourcing an activate script in its bin directory.
