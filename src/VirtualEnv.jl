@@ -44,15 +44,16 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   # Create variables for use throughout
   venv_dir = abspath(env_dir)
   if Sys.iswindows()
-    julia_exec = joinpath(Sys.BINDIR, "julia.exe")
+    exec_name = "julia.exe"
     sym = false
   else
-    julia_exec = joinpath(Sys.BINDIR, "julia")
+    exec_name = "julia"
     sym = false
   end
 
   julia_depot     = get(ENV, "JULIA_DEPOT_PATH", joinpath(Sys.homedir(), ".julia"))
   julia_install   = abspath(joinpath(Sys.BINDIR, ".."))
+  julia_exec      = joinpath(Sys.BINDIR, exec_name)
   julia_lib       = joinpath(julia_install, "lib")
   julia_libexec   = joinpath(julia_install, "libexec")
   julia_share     = joinpath(julia_install, "share", "julia")
@@ -61,7 +62,7 @@ function create(env_dir::String, clear::Bool, upgrade::Bool)
   registries_orig = joinpath(julia_depot, "registries")
 
   bin_dir         = joinpath(venv_dir, "bin")
-  julia_dest      = joinpath(bin_dir, "julia")
+  julia_dest      = joinpath(bin_dir, exec_name)
   activate_dest   = joinpath(bin_dir, "activate")
   lib_dest        = joinpath(venv_dir, "lib")
   libexec_dest    = joinpath(venv_dir, "libexec")
