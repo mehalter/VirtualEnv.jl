@@ -122,7 +122,7 @@ Creates virtual Julia environments in one or more target directories.
 
 # Arguments
 
-- `env_dir`: A directory to create the environment in.
+- `env_dirs::String`: A directory to create the environment in.
 
 # Options
 
@@ -133,8 +133,10 @@ Creates virtual Julia environments in one or more target directories.
 - `-c, --clear`: Delete the contents of the environment directory if it already exists. (Default: false)
 - `-u, --upgrade`: Upgrade the environment directory to use this version of Julia.  (Default: false)
 """
-@main function venv(env_dir::String; clear::Bool=false, upgrade::Bool=false, prompt::String="")
+@main function venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, prompt::String="")
+  for env_dir in env_dirs
     create(env_dir, clear, upgrade, prompt)
+  end
 end
 
 end
