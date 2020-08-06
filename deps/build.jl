@@ -1,2 +1,2 @@
 using Comonicon, VirtualEnv
-Comonicon.install(VirtualEnv, "venv"; optimize=0)
+Comonicon.install(VirtualEnv; name="jlenv", optimize=0, compile="min", completion=true)
