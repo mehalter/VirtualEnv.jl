@@ -122,7 +122,7 @@ Creates virtual Julia environments in one or more target directories.
 
 # Arguments
 
-- `env_dirs::String`: A directory to create the environment in.
+- `env_dirs`: One or more directories to create environments in.
 
 # Options
 
