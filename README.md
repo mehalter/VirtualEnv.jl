@@ -1,6 +1,10 @@
 # VirtualEnv.jl
 
-Self contained virtual environments for Julia.
+VirtualEnv.jl provides support for creating lightweight “virtual environments”
+with their own site directories, isolated from system site directories. Each
+virtual environment has its own Julia binary (which matches the version of the
+binary that was used to create this environment) and can have its own
+independent set of installed Julia packages in its site directories.
 
 ## Supported Shells
 
@@ -16,38 +20,56 @@ Self contained virtual environments for Julia.
 
 # Installation
 
-`~$ julia -e 'using Pkg; Pkg.add("VirtualEnv")'`
+```
+~$ julia -e 'using Pkg; Pkg.add("VirtualEnv")'
+```
+
+add `~/.julia/bin` to your `PATH`, or you can install paths automatically with
+
+```julia
+using VirtualEnv; VirtualEnv.comonicon_install_path()
+```
 
 # Usage
 
 ```
-usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)],
-            [prompt=PROMPT], [help=(true|false)])
+  venv
 
 Creates virtual Julia environments in one or more target directories.
 
-positional arguments:
-  ENV_DIR               A directory to create the environment in.
+Usage
 
-optional arguments:
-  help=(true|false)     show this help message and exit
-  clear=(true|false)    Delete the contents of the environment directory if it
-                        already exists, before environment creation. (Default: false)
-  upgrade=(true|false)  Upgrade the environment directory to use this version
-                        of Julia, assuming Julia has been upgraded in-place. (Default: false)
-  prompt=PROMPT         Provides an alternative prompt prefix for this environment. (Default: ENV_DIR)
+  venv [options] [flags] <env_dirs>
 
-Once an environment has been created, you may wish to activate it,
-e.g. by sourcing an activate script in its bin directory.
+Args
+
+  <env_dirs>               One or more directories to create environments in.
+
+Options
+
+  -p, --prompt <prompt>    Provides an alternative prompt prefix for this
+                           environment.(Default: ENV_DIR)
+
+Flags
+
+  -c, --clear              Delete the contents of the environment directory if it
+                           alreadyexists. (Default: false)
+
+  -u, --upgrade            Upgrade the environment directory to use this version
+                           ofJulia. (Default: false)
+
+  -h, --help               print this help message
+
+  -V, --version            print version information
 ```
 
 Print help dialogue:
 
-`~$ julia -e 'using VirtualEnv; venv(help=true)'`
+`~$ venv -h`
 
 Creating a virtual environment:
 
-`~$ julia -e 'using VirtualEnv; venv("env")'`
+`~$ venv env`
 
 Activating the virtual environment:
 
