@@ -1,5 +1,7 @@
 # VirtualEnv.jl
 
+[![Documentation](https://github.com/mehalter/VirtualEnv.jl/workflows/Documentation/badge.svg)](https://mehalter.github.io/VirtualEnv.jl/stable)
+
 VirtualEnv.jl provides support for creating lightweight “virtual environments”
 with their own site directories, isolated from system site directories. Each
 virtual environment has its own Julia binary (which matches the version of the
