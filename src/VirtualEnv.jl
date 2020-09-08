@@ -5,6 +5,8 @@ Module to provide the ability to create self-contained julia virtual environment
 """
 module VirtualEnv
 
+using Comonicon
+
 export venv
 
 include("Utilities.jl")
@@ -35,34 +37,6 @@ function context(install_dir::String, depot_dir::String)
                  depot_dir,
                  joinpath(depot_dir, "registries")
                 )
-end
-
-"""
-    usage()
-
-Print usage of the venv function
-"""
-function usage()
-  print("""
-usage: venv(ENV_DIR, [ENV_DIR, ...]; [clear=(true|false)], [upgrade=(true|false)],
-            [prompt=PROMPT], [help=(true|false)])
-
-Creates virtual Julia environments in one or more target directories.
-
-positional arguments:
-  ENV_DIR               A directory to create the environment in.
-
-optional arguments:
-  help=(true|false)     show this help message and exit
-  clear=(true|false)    Delete the contents of the environment directory if it
-                        already exists, before environment creation. (Default: false)
-  upgrade=(true|false)  Upgrade the environment directory to use this version
-                        of Julia, assuming Julia has been upgraded in-place. (Default: false)
-  prompt=PROMPT         Provides an alternative prompt prefix for this environment. (Default: ENV_DIR)
-
-Once an environment has been created, you may wish to activate it,
-e.g. by sourcing an activate script in its bin directory.
-""")
 end
 
 """
@@ -144,19 +118,24 @@ function create(env_dir::String, clear::Bool, upgrade::Bool, prompt::String)
 end
 
 """
-    venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, prompt::String=nothing)
+Creates virtual Julia environments in one or more target directories.
 
-Create the listed environment directories.
+# Arguments
+
+- `env_dirs`: One or more directories to create environments in.
+
+# Options
+
+- `-p, --prompt <prompt>`: Provides an alternative prompt prefix for this environment. (Default: ENV_DIR)
+
+# Flags
+
+- `-c, --clear`: Delete the contents of the environment directory if it already exists. (Default: false)
+- `-u, --upgrade`: Upgrade the environment directory to use this version of Julia.  (Default: false)
 """
-function venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, help::Bool=false, prompt::String="")
-  # Print usage if no environment directories given
-  if help || isempty(env_dirs)
-    usage()
-  # Create each environment directory provided if directories provided
-  else
-    for env_dir in env_dirs
-      create(env_dir, clear, upgrade, prompt)
-    end
+@main function venv(env_dirs::String...; clear::Bool=false, upgrade::Bool=false, prompt::String="")
+  for env_dir in env_dirs
+    create(env_dir, clear, upgrade, prompt)
   end
 end
 

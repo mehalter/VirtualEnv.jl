@@ -1,7 +1,11 @@
 name = "VirtualEnv"
 uuid = "f8ef4a19-0666-4e54-aa90-5d6169a53550"
 authors = ["Micah Halter <micah@mehalter.com>"]
-version = "0.1.0"
+version = "1.0.0"
+
+[deps]
+Comonicon = "863f3e99-da2a-4334-8734-de3dacbe5542"
 
 [compat]
+Comonicon = "^0.6"
 julia = "1.0"
